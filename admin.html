@@ -3,14 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<nav>
+  <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html">Admin</a>
+  <a href="#" id="logoutBtn">Logout</a>
+</nav>
+
+<div class="container">
   <h1>Admin Panel</h1>
-
-  <p id="adminStatus">Checking admin access...</p>
-
-  <button id="logoutBtn">Logout</button>
+  <p id="adminStatus" class="notice">Checking admin access...</p>
 
   <ul>
     <li>👥 Approve members</li>
@@ -18,17 +24,12 @@
     <li>📅 Manage events</li>
     <li>📂 Upload resources</li>
   </ul>
+</div>
 
-  <a href="dashboard.html">← Back to Dashboard</a>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     // 🔐 Firebase configuration (SAME as other pages)
     const firebaseConfig = {
       apiKey: "AIzaSyCyfEhO3Q_eHGRfOMtHnnKzI523Lgz_bhI",
@@ -40,39 +41,34 @@
       measurementId: "G-1Q62E3KX17"
     };
 
+  const adminEmails = [
+    "shoaibtahirr410@gmail.com"
+  ];
 
-    // 👑 Admin email list (REPLACE with REAL emails)
-    const adminEmails = [
-      "shoaibtahirr410@gmail.com"
-    ];
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-    // Protect admin page
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+    if (adminEmails.includes(user.email)) {
+      document.getElementById("adminStatus").innerText =
+        "Welcome Admin: " + user.email;
+    } else {
+      alert("Access denied: Admins only");
+      window.location.href = "dashboard.html";
+    }
+  });
 
-      if (adminEmails.includes(user.email)) {
-        document.getElementById("adminStatus").innerText =
-          "Welcome Admin: " + user.email;
-      } else {
-        alert("Access denied: Admins only");
-        window.location.href = "dashboard.html";
-      }
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
     });
-
-    // Logout
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
-    });
-  </script>
+  });
+</script>
 
 </body>
 </html>
