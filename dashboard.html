@@ -2,31 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Member Dashboard</title>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<nav>
+  <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html" id="adminLink" style="display:none;">Admin</a>
+  <a href="#" id="logoutBtn">Logout</a>
+</nav>
+
+<div class="container">
   <h1>Member Dashboard</h1>
-
-  <p id="welcome">Checking login status...</p>
-
-  <button id="logoutBtn">Logout</button>
+  <p id="welcome" class="notice">Checking login...</p>
 
   <ul>
-    <li>📄 Access resources</li>
+    <li>📄 Access society resources</li>
     <li>📢 View announcements</li>
     <li>📅 Register for events</li>
   </ul>
+</div>
 
-  <a href="index.html">← Back to Home</a>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
     // 🔐 Firebase config (same as login.html)
     const firebaseConfig = {
@@ -38,27 +41,33 @@
       appId: "1:408809821572:web:33808243519db3e0e4f9d1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const adminEmails = [
+    "your@email.com"
+  ];
 
-    // Protect dashboard
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("welcome").innerText =
-          "Welcome, " + user.email;
-      } else {
-        window.location.href = "login.html";
-      }
-    });
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    // Logout
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("welcome").innerText =
+      "Welcome, " + user.email;
+
+    if (adminEmails.includes(user.email)) {
+      document.getElementById("adminLink").style.display = "inline";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
