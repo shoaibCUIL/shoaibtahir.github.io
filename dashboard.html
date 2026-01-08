@@ -10,6 +10,8 @@
 
   <p id="welcome">Checking login status...</p>
 
+  <button id="logoutBtn">Logout</button>
+
   <ul>
     <li>📄 Access resources</li>
     <li>📢 View announcements</li>
@@ -19,10 +21,12 @@
   <a href="index.html">← Back to Home</a>
 
   <script type="module">
-    // Firebase imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
     // 🔐 Firebase config (same as login.html)
     const firebaseConfig = {
@@ -34,7 +38,6 @@
       appId: "1:408809821572:web:33808243519db3e0e4f9d1"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -44,11 +47,19 @@
         document.getElementById("welcome").innerText =
           "Welcome, " + user.email;
       } else {
-        // Not logged in → go to login
         window.location.href = "login.html";
       }
+    });
+
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
     });
   </script>
 
 </body>
 </html>
+
